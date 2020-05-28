@@ -1,6 +1,6 @@
 from defines import get_host_ip, get_now_str
 
-print(f'{__name__}: get_host_ip: {id(get_host_ip)}')
+print(f'### {__name__}: id(get_host_ip): {id(get_host_ip)}')
 
 
 def func(your_name):

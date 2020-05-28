@@ -13,7 +13,6 @@ class TestDemo(TestCase):
         '''
         init before every test method
         '''
-        print('# before one start')
 
     def test_wrong_input(self):
         res = func(None)
@@ -23,7 +22,7 @@ class TestDemo(TestCase):
     # @patch('defines.get_host_ip')  # wrong mock (where defines)
     @patch('demo.get_host_ip')  # mock where you import and use
     def test_socket_error(self, mock_get_host_ip):
-        print(f'{__name__}: mock_get_host_ip: {id(mock_get_host_ip)}')
+        print(f'### {__name__}: id(mock_get_host_ip): {id(mock_get_host_ip)}')
         mock_get_host_ip.side_effect = Exception('Error Msg')
         res = func('Hello World')
         assert res[0] == False
@@ -32,6 +31,7 @@ class TestDemo(TestCase):
     @patch('demo.get_host_ip')
     @patch('demo.get_now_str')
     def test_success(self, mock_get_now_str, mock_get_host_ip):
+        print(f'### {__name__}: id(mock_get_host_ip): {id(mock_get_host_ip)}')
         mock_get_host_ip.return_value = '8.8.8.8'
         mock_get_now_str.return_value = 'now_str'
         res = func('Hello World')
@@ -41,6 +41,5 @@ class TestDemo(TestCase):
 
     def tearDown(self):
         '''
-        something after every test method
+        do something after every test method
         '''
-        print('# after one run')

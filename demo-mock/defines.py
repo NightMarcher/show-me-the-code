@@ -16,4 +16,4 @@ def get_now_str():
     return datetime.now().strftime('%x %X')
 
 
-print(f'{__name__}: get_host_ip: {id(get_host_ip)}')
+print(f'### {__name__}: id(get_host_ip): {id(get_host_ip)}')
