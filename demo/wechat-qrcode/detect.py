@@ -16,11 +16,19 @@ detector = cv2.wechat_qrcode_WeChatQRCode(
 )
 
 # read image
+
+# Method 1
 # with open("test.png", "rb") as f:
 #     bs = f.read()
 # array = np.frombuffer(bs, dtype=np.uint8)
 # img = cv2.imdecode(array, cv2.IMREAD_GRAYSCALE)
-img = cv2.imread("test.png", cv2.IMREAD_COLOR)
+
+# Method 2
+# img = cv2.imread("test.png", cv2.IMREAD_COLOR)
+
+# Method 3
+img = cv2.imread("test-reverse.png", cv2.IMREAD_GRAYSCALE)
+img = 255 - img  # reverse gray scale
 
 # detect
 strings, coordinates = detector.detectAndDecode(img)
