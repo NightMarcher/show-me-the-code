@@ -5,34 +5,40 @@ from time import perf_counter
 
 
 # @asyncio.coroutine
-# def sleep(cid):
+# def sleep(cid=None):
 async def sleep(cid=None):
-    if not cid:
+    if cid is None:
         cid = urandom(5).hex()
     sec = uniform(0, 2)
     # yield from asyncio.sleep(sec)
+    print(f"Coroutine({cid}) will sleep {sec:.2f} seconds")
     await asyncio.sleep(sec)
-    print(f"Coroutine({cid}) has slept {sec:.2f} seconds")
+    print(f"Coroutine({cid}) has slept")
     return sec
 
-# 1. coroutine object
-# future = sleep()
 
-# 2. pending Task
-# future = asyncio.ensure_future(sleep())
+async def main():
+    # 1. coroutine object sleep
+    # future = sleep()
 
-# 3. coroutine object wait
-future = asyncio.wait([sleep(), sleep(), sleep()])
+    # 2. pending Task
+    future = asyncio.create_task(sleep())
+    # future = asyncio.ensure_future(sleep())
 
-# 4. pending _GatheringFuture
-# future = asyncio.gather(sleep(), sleep(), sleep())
+    # 3. pending _GatheringFuture
+    # future = asyncio.gather(sleep(), sleep(), sleep())
 
-print(future)
+    # 4. coroutine object wait, deprecated since Python 3.8
+    # future = asyncio.wait([sleep(), sleep(), sleep()])
 
-st = perf_counter()
-result = asyncio.run(future)
-# loop = asyncio.get_event_loop()
-# result = loop.run_until_complete(future)
-et = perf_counter()
+    print(future)
+    return await future
 
-print(f"total duration: {et - st:.3f}, result: {result}")
+
+if __name__ == "__main__":
+    st = perf_counter()
+    result = asyncio.run(main())
+    # loop = asyncio.get_event_loop()
+    # result = loop.run_until_complete(main())
+    et = perf_counter()
+    print(f"total duration: {et - st:.3f}, result: {result}")
