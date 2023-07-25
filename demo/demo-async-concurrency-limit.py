@@ -7,9 +7,8 @@ from time import perf_counter, time
 async def handle_sleep(sem):
     async with sem:
         res = await sleep()
-
-    print("sleeping")
-    await asyncio.sleep(1)
+        print("sleeping")
+        await asyncio.sleep(1)
     return res
 
 
@@ -36,7 +35,7 @@ async def using_for_loop():
 
 def init_coroutines():
     sem = asyncio.Semaphore(2)
-    return [handle_sleep(sem) for _ in range(4)]
+    return [handle_sleep(sem) for _ in range(6)]
 
 
 if __name__ == "__main__":
