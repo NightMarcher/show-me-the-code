@@ -9,27 +9,26 @@ def cache(timeout_sec=60):
     def wrapper(func):
         @functools.wraps(func)
         def inner(*args, **kwargs):
-            params_str = "{}|{}".format(
-                ",".join(str(item) for item in args),
+            params = "{}|{}".format(
+                ",".join(str(item) for item in args if isinstance(item, (str, bool, int, float, dict, list, tuple))),
                 "&".join(sorted(f"{k}={v}" for k, v in kwargs.items())),
             )
             key = "{}:{}".format(
                 func.__qualname__,
-                hashlib.md5(params_str.encode()).hexdigest(),
+                hashlib.md5(params.encode()).hexdigest(),
             )
-            rds = redis.Redis(decode_responses=True)
-            result = rds.get(key)
-            print(params_str, key, result, sep="\n")
             try:
+                rcli = redis.Redis(decode_responses=True)
+                result = rcli.get(key)
+                print(f"{func.__qualname__} => params:{params}, result:{result}")
                 if result is not None:
                     result = json.loads(result)
                 else:
                     result = func(*args, **kwargs)
-                    rds.set(key, json.dumps(result), ex=timeout_sec)
+                    rcli.set(key, json.dumps(result), ex=timeout_sec)
             except Exception as e:
                 logging.exception(e)
             else:
-                print(result, "\n")
                 return result
         return inner
     return wrapper
