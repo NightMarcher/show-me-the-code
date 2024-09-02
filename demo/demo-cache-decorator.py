@@ -5,7 +5,7 @@ import logging
 import redis
 
 
-def cache(timeout_sec=60):
+def cache(timeout_sec=60, encoder=json.dumps, decoder=json.loads):
     def wrapper(func):
         @functools.wraps(func)
         def inner(*args, **kwargs):
@@ -18,14 +18,14 @@ def cache(timeout_sec=60):
                 hashlib.md5(params.encode()).hexdigest(),
             )
             try:
-                rcli = redis.Redis(decode_responses=True)
+                rcli = redis.Redis()
                 result = rcli.get(key)
                 print(f"{func.__qualname__} => params:{params}, result:{result}")
                 if result is not None:
-                    result = json.loads(result)
+                    result = decoder(result)
                 else:
                     result = func(*args, **kwargs)
-                    rcli.set(key, json.dumps(result), ex=timeout_sec)
+                    rcli.set(key, encoder(result), ex=timeout_sec)
             except Exception as e:
                 logging.exception(e)
             else:
@@ -34,7 +34,8 @@ def cache(timeout_sec=60):
     return wrapper
 
 
-@cache()
+import pickle
+@cache(timeout_sec=5, encoder=pickle.dumps, decoder=pickle.loads)
 def demo_func(p, *args, r=2, **kwargs):
     """docstring of demo_func"""
     import random
