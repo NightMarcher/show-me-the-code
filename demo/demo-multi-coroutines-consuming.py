@@ -32,8 +32,7 @@ async def work(queue, handler):
 
 async def main(queue_size, worker_num, handle_task):
     queue = asyncio.Queue(queue_size)
-    for _ in range(worker_num):
-        asyncio.create_task(work(queue, handle_task))
+    workers = [asyncio.create_task(work(queue, handle_task)) for _ in range(worker_num)]
 
     while running:
         task = await get_task()
@@ -41,6 +40,8 @@ async def main(queue_size, worker_num, handle_task):
         await queue.put(task)
         global got_tasks
         got_tasks += 1
+
+    await asyncio.gather(*workers, return_exceptions=True)
 
 
 if __name__ == "__main__":
