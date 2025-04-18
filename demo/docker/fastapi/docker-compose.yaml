@@ -1,0 +1,22 @@
+services:
+  web:
+    image: demo-fastapi:dev
+    deploy:
+      replicas: 2
+    networks:
+      - demo-web-network
+
+  nginx:
+    image: nginx:1.27.4
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    networks:
+      - demo-web-network
+    depends_on:
+      - web
+
+networks:
+  demo-web-network:
+    driver: bridge
